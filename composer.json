@@ -1,0 +1,27 @@
+{
+    "name": "alex-kalanis/email-mailgun",
+    "description": "Mailgun mail service as part of EmailApi",
+    "keywords": [],
+    "license": "BSD 3-Clause",
+    "type": "project",
+    "require": {
+        "php": ">=7.1.0",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "mailgun/mailgun-php": "*",
+        "php-http/guzzle6-adapter": "*",
+        "php-http/message": "*",
+        "kriswallsmith/buzz": "*",
+        "nyholm/psr7": "*",
+        "alex-kalanis/email-api": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "EmailMailgun\\": "php-src/"
+        }
+    },
+    "scripts": {
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
