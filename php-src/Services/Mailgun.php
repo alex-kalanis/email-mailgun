@@ -14,13 +14,16 @@ use Mailgun\Mailgun as libMailgun;
  */
 class Mailgun implements Interfaces\Sending
 {
+    /** @var Interfaces\LocalProcessing */
+    protected $localProcess = '';
     /** @var string */
     protected $confKey = '';
     /** @var string */
     protected $confTarget = '';
 
-    public function __construct(string $confKey = '', string $confTarget = '')
+    public function __construct(Interfaces\LocalProcessing $localProcess, string $confKey = '', string $confTarget = '')
     {
+        $this->localProcess = $localProcess;
         $this->confKey = $confKey;
         $this->confTarget = $confTarget;
     }
@@ -51,7 +54,7 @@ class Mailgun implements Interfaces\Sending
         if ($toDisabled) {
             try {
                 $this->enableMailOnRemote($to);
-                $this->enableMailLocally($to);
+                $this->localProcess->enableMailLocally($to);
             } catch (Exceptions\EmailException $ex) {
                 return new Basics\Result(false, $ex->getMessage(), 0);
             }
@@ -108,21 +111,12 @@ class Mailgun implements Interfaces\Sending
      * @return void
      * @throws Exceptions\EmailException
      */
-    protected function enableMailOnRemote(Interfaces\EmailUser $to)
+    protected function enableMailOnRemote(Interfaces\EmailUser $to): void
     {
         $libMailgun = libMailgun::create($this->confKey);
         $resultUnsub = $libMailgun->suppressions()->unsubscribes()->delete($this->confTarget, $to->getEmail());
         $resultBounce = $libMailgun->suppressions()->bounces()->delete($this->confTarget, $to->getEmail());
         // When both $resultUnsub and $resultBounce get 200 - everything is okay
         // But I did not find where is response code
-    }
-
-    /**
-     * Remove blocks made on local machine by callbacks
-     * @param Interfaces\EmailUser $to
-     */
-    protected function enableMailLocally(Interfaces\EmailUser $to)
-    {
-        // nothing to do here - let it extend
     }
 }
