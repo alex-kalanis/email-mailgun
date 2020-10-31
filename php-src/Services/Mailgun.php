@@ -12,16 +12,16 @@ use Mailgun\Mailgun as libMailgun;
  * Make and send each mail via Mailgun service
  * @link http://www.mailgun.com/
  */
-class Mailgun implements Interfaces\Sending
+class Mailgun implements Interfaces\ISending
 {
-    /** @var Interfaces\LocalProcessing */
+    /** @var Interfaces\ILocalProcessing */
     protected $localProcess = '';
     /** @var string */
     protected $confKey = '';
     /** @var string */
     protected $confTarget = '';
 
-    public function __construct(Interfaces\LocalProcessing $localProcess, string $confKey = '', string $confTarget = '')
+    public function __construct(Interfaces\ILocalProcessing $localProcess, string $confKey = '', string $confTarget = '')
     {
         $this->localProcess = $localProcess;
         $this->confKey = $confKey;
@@ -42,14 +42,14 @@ class Mailgun implements Interfaces\Sending
     /**
      * Send mail directly into the service
      *
-     * @param Interfaces\Content $content
-     * @param Interfaces\EmailUser $to
-     * @param Interfaces\EmailUser $from
-     * @param Interfaces\EmailUser $replyTo
+     * @param Interfaces\IContent $content
+     * @param Interfaces\IEmailUser $to
+     * @param Interfaces\IEmailUser $from
+     * @param Interfaces\IEmailUser $replyTo
      * @param bool $toDisabled
      * @return Basics\Result
      */
-    public function sendEmail(Interfaces\Content $content, Interfaces\EmailUser $to, ?Interfaces\EmailUser $from = null, ?Interfaces\EmailUser $replyTo = null, $toDisabled = false): Basics\Result
+    public function sendEmail(Interfaces\IContent $content, Interfaces\IEmailUser $to, ?Interfaces\IEmailUser $from = null, ?Interfaces\IEmailUser $replyTo = null, $toDisabled = false): Basics\Result
     {
         if ($toDisabled) {
             try {
@@ -77,7 +77,7 @@ class Mailgun implements Interfaces\Sending
             $attachments = [];
             $inline = [];
             foreach ($content->getAttachments() as $attachment) {
-                if (Interfaces\ContentAttachment::TYPE_INLINE == $attachment->getType()) {
+                if (Interfaces\IContentAttachment::TYPE_INLINE == $attachment->getType()) {
                     $inline[] = [
                         'filePath' => $attachment->getLocalPath(),
                         'filename' => $attachment->getFileName(),
@@ -107,11 +107,11 @@ class Mailgun implements Interfaces\Sending
 
     /**
      * Remove address from internal bounce log on Mailgun
-     * @param Interfaces\EmailUser $to
+     * @param Interfaces\IEmailUser $to
      * @return void
      * @throws Exceptions\EmailException
      */
-    protected function enableMailOnRemote(Interfaces\EmailUser $to): void
+    protected function enableMailOnRemote(Interfaces\IEmailUser $to): void
     {
         $libMailgun = libMailgun::create($this->confKey);
         $resultUnsub = $libMailgun->suppressions()->unsubscribes()->delete($this->confTarget, $to->getEmail());
