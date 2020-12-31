@@ -1,11 +1,13 @@
 <?php
 
-namespace EmailMailgun\Services;
+namespace kalanis\EmailMailgun\Services;
 
-use EmailApi\Exceptions;
-use EmailApi\Interfaces;
-use EmailApi\Basics;
+
+use kalanis\EmailApi\Exceptions;
+use kalanis\EmailApi\Interfaces;
+use kalanis\EmailApi\Basics;
 use Mailgun\Mailgun as libMailgun;
+
 
 /**
  * Class Mailgun

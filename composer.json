@@ -1,9 +1,12 @@
 {
     "name": "alex-kalanis/email-mailgun",
     "description": "Mailgun mail service as part of EmailApi",
-    "keywords": [],
-    "license": "BSD 3-Clause",
-    "type": "project",
+    "keywords": [
+        "email",
+        "mailgun"
+    ],
+    "license": "BSD-3-Clause",
+    "type": "library",
     "require": {
         "php": ">=7.1.0",
         "ext-curl": "*",
@@ -13,11 +16,11 @@
         "php-http/message": "*",
         "kriswallsmith/buzz": "*",
         "nyholm/psr7": "*",
-        "alex-kalanis/email-api": "dev-master"
+        "alex-kalanis/email-api": "1.0"
     },
     "autoload": {
         "psr-4": {
-            "EmailMailgun\\": "php-src/"
+            "kalanis\\EmailMailgun\\": "php-src/"
         }
     },
     "scripts": {
