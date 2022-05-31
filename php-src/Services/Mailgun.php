@@ -6,6 +6,7 @@ namespace kalanis\EmailMailgun\Services;
 use kalanis\EmailApi\Exceptions;
 use kalanis\EmailApi\Interfaces;
 use kalanis\EmailApi\Basics;
+use Mailgun\Exception\HttpClientException;
 use Mailgun\Mailgun as libMailgun;
 
 
@@ -13,6 +14,8 @@ use Mailgun\Mailgun as libMailgun;
  * Class Mailgun
  * Make and send each mail via Mailgun service
  * @link http://www.mailgun.com/
+ * @link https://documentation.mailgun.com/en/latest/
+ * @link https://github.com/mailgun/mailgun-php
  */
 class Mailgun implements Interfaces\ISending
 {
@@ -103,8 +106,12 @@ class Mailgun implements Interfaces\ISending
             $data['inline'] = $inline;
         }
 
-        $result = $libMailgun->messages()->send($this->confTarget, $data);
-        return new Basics\Result(true, $result);
+        try {
+            $result = $libMailgun->messages()->send($this->confTarget, $data);
+            return new Basics\Result(true, $result);
+        } catch (HttpClientException $ex) {
+            return new Basics\Result(false, $ex);
+        }
     }
 
     /**
@@ -116,9 +123,11 @@ class Mailgun implements Interfaces\ISending
     protected function enableMailOnRemote(Interfaces\IEmailUser $to): void
     {
         $libMailgun = libMailgun::create($this->confKey);
-        $resultUnsub = $libMailgun->suppressions()->unsubscribes()->delete($this->confTarget, $to->getEmail());
-        $resultBounce = $libMailgun->suppressions()->bounces()->delete($this->confTarget, $to->getEmail());
-        // When both $resultUnsub and $resultBounce get 200 - everything is okay
-        // But I did not find where is response code
+        try {
+            $libMailgun->suppressions()->unsubscribes()->delete($this->confTarget, $to->getEmail());
+            $libMailgun->suppressions()->bounces()->delete($this->confTarget, $to->getEmail());
+        } catch (HttpClientException $ex) {
+            throw new Exceptions\EmailException($ex->getMessage(), $ex->getCode(), $ex);
+        }
     }
 }
